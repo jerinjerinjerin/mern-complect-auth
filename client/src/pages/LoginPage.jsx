@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const isLoading = false;
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -60,8 +61,9 @@ const LoginPage = () => {
             whileHover={{ scale: 1.02}}
             whileTap={{scale: 0.98}}
             type='submit'
+            disabled={isLoading}
            >
-             Login
+             {isLoading ? <Loader className="w-6 h-6 animate-spin text-center mx-auto"/> : "Login"}
            </motion.button>
         </form>
       </div>
