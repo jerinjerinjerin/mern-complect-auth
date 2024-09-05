@@ -3,9 +3,11 @@ import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import { connectDB } from './db/connectDB.js';
 import authRoute from './route/auth.route.js';
+import cors from 'cors';
 
 dotenv.config();
 const app = express();
+app.use(cors({ origin: 'http://localhost:5173', credentials: true}));
 
 
 app.use(express.json());// allow us to parse incoming rquests:req.body
