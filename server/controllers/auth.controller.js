@@ -15,7 +15,7 @@ export const signup = async (req, res) => {
 
   try {
     if (!name || !email || !password) {
-      throw new Error("All fields are required");
+      return res.status(401).json({message: 'All feild is required'})
     }
 
     const userAlreadyExists = await User.findOne({ email });
@@ -56,7 +56,7 @@ export const signup = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(400).json({ success: false, meaasge: error.message });
+    return res.status(400).json({ success: false, meaasge: error });
   }
 };
 
