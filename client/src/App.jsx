@@ -1,22 +1,54 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import FloatingShape from "./components/FloatingShape";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import EmailVerificationPage from "./pages/EmailVerificationPage";
-import {Toaster} from 'react-hot-toast';
+import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
+import DashboardPage from "./pages/DashboardPage";
+import LoadingSpinner from "./components/LoadingSpinner";
+
+// Protect routes that require authentication
+const ProtectedRoute = ({ children }) => {
+  const { isAuthenticated, user } = useAuthStore();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!user.isVerified) {
+    return <Navigate to="/email-verify" replace />;
+  }
+
+  return children;
+};
+
+// Redirect authenticated users to the home page
+const RedirectAuthenticateUser = ({ children }) => {
+  const { isAuthenticated, user } = useAuthStore();
+
+  if (isAuthenticated && user.isVerified) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
+
 function App() {
-  const { isCheckingAuth, checkAuth, isAuthenticated, user } = useAuthStore();
+  const {
+    isCheckingAuth,
+    checkAuth,
+    isAuthenticated,
+    user
+  } = useAuthStore();
 
   useEffect(() => {
-    checkAuth()
-  },[checkAuth])
+    checkAuth();
+  }, [checkAuth]);
 
-  console.log('isauth', isAuthenticated);
-  console.log('user', user)
+  if (isCheckingAuth) return <LoadingSpinner />;
 
-  useAuthStore();
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-gray-900
@@ -46,12 +78,24 @@ function App() {
       />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={"Home"} />
-          <Route path="/signup" element={<SignUpPage />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/" element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          } />
+          <Route path="/signup" element={
+            <RedirectAuthenticateUser>
+              <SignUpPage />
+            </RedirectAuthenticateUser>
+          } />
+          <Route path="/login" element={
+            <RedirectAuthenticateUser>
+              <LoginPage />
+            </RedirectAuthenticateUser>
+          } />
           <Route path="/email-verify" element={<EmailVerificationPage />} />
         </Routes>
-        <Toaster/>
+        <Toaster />
       </BrowserRouter>
     </div>
   );
