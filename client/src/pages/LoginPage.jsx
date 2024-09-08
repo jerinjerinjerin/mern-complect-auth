@@ -25,7 +25,6 @@ const LoginPage = () => {
       }
     } catch (error) {
       console.log(error);
-      toast.error('Login field please try again later')
     }
   };
   return (

@@ -97,5 +97,22 @@ export const useAuthStore = create((set) => ({
     } catch (error) {
       set({error: null, isCheckingAuth:false, isAuthenticated:false})
     }
+  },
+
+  forgetPassword: async (email) => {
+    set({ isLoading: true, error: null });
+
+    try {
+       const response = await axios.post(`${API_URL}/forget-password`, {email});
+
+       set({message: response.data.message, isLoading: false})
+    } catch (error) {
+       set({
+        isLoading: false,
+        error: error.response.data.message || "Error sending password reset link",
+       })
+
+       throw error;
+    }
   }
 }));
